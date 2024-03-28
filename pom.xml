@@ -62,13 +62,13 @@
         <mainClass>org.nchadoop.Main</mainClass>
 
         <skipTests>false</skipTests>
-        <java-version>1.7</java-version>
+        <java-version>1.8</java-version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <slf4j.version>1.6.4</slf4j.version>
         <logback.version>1.0.1</logback.version>
-        <hadoop.version.generic>2.0.0-cdh4.2.0</hadoop.version.generic>
-        <hadoop.version.mr1>2.0.0-mr1-cdh4.2.0</hadoop.version.mr1>
+        <hadoop.version.generic>3.4.0</hadoop.version.generic>
+        <hadoop.version.mr1>2.6.0-mr1-cdh5.5.0</hadoop.version.mr1>
     </properties>
 
     <dependencies>
@@ -134,7 +134,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>0.12.0</version>
+            <version>1.12.2</version>
             <scope>provided</scope>
         </dependency>
 
@@ -163,6 +163,13 @@
             <version>1.30</version>
         </dependency>
 
+        <dependency>
+            <groupId>jdk.tools</groupId>
+            <artifactId>jdk.tools</artifactId>
+            <version>1.8</version>
+            <scope>system</scope>
+            <systemPath>${env.JAVA_HOME}/lib/tools.jar</systemPath>
+        </dependency>
     </dependencies>
 
     <repositories>
@@ -178,6 +185,45 @@
 
     <build>
         <plugins>
+            <!-- To create jar with dependencies -->
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.1.0</version>
+                <configuration>
+                <archive>
+                    <manifest>
+                        <mainClass>${mainClass}</mainClass>
+                    </manifest>
+                </archive>
+                <descriptorRefs>
+                    <descriptorRef>jar-with-dependencies</descriptorRef>
+                </descriptorRefs>
+                </configuration>
+                <executions>
+                <execution>
+                    <id>make-assembly</id>
+                    <phase>package</phase>
+                    <goals>
+                    <goal>single</goal>
+                    </goals>
+                </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.1.0</version>
+                <configuration>
+                <archive>
+                    <manifest>
+                        <addClasspath>true</addClasspath>
+                        <classpathPrefix>lib/</classpathPrefix>
+                        <mainClass>${mainClass}</mainClass>
+                        <packageName>org.nchadoop</packageName>
+                    </manifest>
+                </archive>
+                </configuration>
+            </plugin>
 
 			<!-- To specify the Java Version -->
             <plugin>
