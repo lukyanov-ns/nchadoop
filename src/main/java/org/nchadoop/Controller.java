@@ -32,6 +32,8 @@ import org.nchadoop.ui.ScanningPopup;
 import com.googlecode.lanterna.gui.GUIScreen;
 import com.googlecode.lanterna.gui.Window;
 import com.googlecode.lanterna.gui.dialog.MessageBox;
+import com.googlecode.lanterna.gui.dialog.DialogResult;
+import com.googlecode.lanterna.gui.dialog.DialogButtons;
 import com.googlecode.lanterna.input.Key;
 import com.googlecode.lanterna.input.Key.Kind;
 
@@ -77,7 +79,11 @@ public class Controller
     {
         if (key.getCharacter() == 'q' || key.getKind() == Kind.Escape)
         {
-            shutdown();
+            DialogResult quitConfirmRes = MessageBox.showMessageBox(guiScreen, "Warning",
+                                                                    "Are you sure want to quit?",
+                                                                    DialogButtons.OK_CANCEL);
+
+            if (quitConfirmRes == DialogResult.OK) shutdown();
             return true;
         }
         else if (key.getCharacter() == '?')
