@@ -31,9 +31,12 @@ import com.googlecode.lanterna.gui.GUIScreen;
 import com.googlecode.lanterna.gui.Window;
 import com.googlecode.lanterna.gui.component.Panel;
 import com.googlecode.lanterna.gui.dialog.MessageBox;
+import com.googlecode.lanterna.gui.dialog.DialogResult;
+import com.googlecode.lanterna.gui.dialog.DialogButtons;
 import com.googlecode.lanterna.gui.layout.BorderLayout;
 import com.googlecode.lanterna.gui.layout.LinearLayout;
 import com.googlecode.lanterna.input.Key;
+import com.googlecode.lanterna.input.Key.Kind;
 import com.googlecode.lanterna.screen.Screen;
 
 @Data
@@ -107,7 +110,7 @@ public class MainWindow extends Window
             return;
         }
 
-        if (key.getCharacter() != 'd')
+        if (key.getCharacter() != 'd' && key.getKind() != Kind.Delete)
         {
             super.onKeyPressed(key);
             return;
@@ -125,6 +128,19 @@ public class MainWindow extends Window
 
         final Object reference = displayable.getReference();
 
+        String refName = displayable.getName().replace("/", "");
+        if(refName.length() > 30) refName = refName.substring(0,26) + "...";
+
+        String delMsgText = "Are you sure want to remove " 
+                            + (reference instanceof Directory ? "directory ":"file ")
+                            + refName + "?";
+
+        DialogResult delConfirmRes = MessageBox.showMessageBox(this.gui, "Warning",
+                                                               delMsgText,
+                                                               DialogButtons.OK_CANCEL);
+
+        if (delConfirmRes != DialogResult.OK) return;
+        
         if (reference instanceof Directory)
         {
             this.controller.deleteDiretory((Directory) reference);

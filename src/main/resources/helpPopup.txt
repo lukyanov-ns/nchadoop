@@ -4,6 +4,6 @@
  right, enter, l  Open selected directory
  left, h          Open parent directory
  
- d                Delete selected file or directory
+ d, delete        Delete selected file or directory
  q, esc           Quit nchadoop
  
