@@ -128,11 +128,13 @@ public class MainWindow extends Window
 
         final Object reference = displayable.getReference();
 
+        Boolean isRefDirectory = reference instanceof Directory;
+
         String refName = displayable.getName().replace("/", "");
         if(refName.length() > 30) refName = refName.substring(0,26) + "...";
 
         String delMsgText = "Are you sure want to remove " 
-                            + (reference instanceof Directory ? "directory ":"file ")
+                            + (isRefDirectory ? "directory ":"file ")
                             + refName + "?";
 
         DialogResult delConfirmRes = MessageBox.showMessageBox(this.gui, "Warning",
@@ -141,7 +143,7 @@ public class MainWindow extends Window
 
         if (delConfirmRes != DialogResult.OK) return;
         
-        if (reference instanceof Directory)
+        if (isRefDirectory)
         {
             this.controller.deleteDiretory((Directory) reference);
         }
