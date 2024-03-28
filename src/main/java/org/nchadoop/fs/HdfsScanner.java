@@ -38,7 +38,8 @@ public class HdfsScanner
 
     public HdfsScanner(final URI namenode, final String user) throws IOException, InterruptedException
     {
-        this.fileSystem = FileSystem.get(namenode, new Configuration(), user);
+        //this.fileSystem = FileSystem.get(namenode, new Configuration(), user);
+        this.fileSystem = FileSystem.get(namenode, new Configuration());
     }
 
     public SearchRoot refresh(final URI namenode, String... globFilter) throws IOException
