@@ -155,6 +155,7 @@ public class MainWindow extends Window
         {
             MessageBox.showMessageBox(this.gui, "Error", "Can't delete this.");
         }
+        this.screen.completeRefresh();
     }
 
     public void changeFolder(final Directory directory)
