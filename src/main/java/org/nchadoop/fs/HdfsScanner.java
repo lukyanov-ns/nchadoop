@@ -25,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Trash;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.fs.PathFilter;
 
@@ -108,6 +109,19 @@ public class HdfsScanner
         return deleteSuccess;
     }
 
+    public boolean moveDirToTrash(final Directory directory) throws IOException
+    {
+        Trash trash = new Trash(this.fileSystem, this.fileSystem.getConf());
+        final boolean moveSuccess = trash.moveToTrash(new Path(directory.absolutDirectoryName()));
+
+        if (moveSuccess)
+        {
+            directory.remove();
+        }
+
+        return moveSuccess;
+    }
+
     public boolean deleteFile(final Directory parent, final FileStatus fileStatus) throws IOException
     {
         final boolean delete = this.fileSystem.delete(fileStatus.getPath(), false);
@@ -119,6 +133,19 @@ public class HdfsScanner
 
         return delete;
 
+    }
+
+    public boolean moveFileToTrash(final Directory parent, final FileStatus fileStatus) throws IOException
+    {
+        Trash trash = new Trash(this.fileSystem, this.fileSystem.getConf());
+        final boolean moveSuccess = trash.moveToTrash(fileStatus.getPath());
+
+        if (moveSuccess)
+        {
+            parent.removeFile(fileStatus);
+        }
+
+        return moveSuccess;
     }
 
     private void addFile(final SearchRoot searchRoot, final FileStatus file)

@@ -105,7 +105,15 @@ public class Controller
 
         try
         {
-            if (!this.hdfsScanner.deleteDirectory(directory))
+            Boolean deleteSuccess = this.hdfsScanner.moveDirToTrash(directory);
+            if (!deleteSuccess) {
+                DialogResult delPermanently = MessageBox.showMessageBox(guiScreen, "Warning",
+                                                               "Couldn`t move this directory to trash. Delete it permanently?",
+                                                               DialogButtons.YES_NO);
+                if (delPermanently == DialogResult.YES) 
+                    deleteSuccess = this.hdfsScanner.deleteDirectory(directory);
+            }
+            if (!deleteSuccess)
             {
                 MessageBox.showMessageBox(this.guiScreen, "Error", "Couldn't delete this.");
             }
@@ -124,7 +132,15 @@ public class Controller
     {
         try
         {
-            if (this.hdfsScanner.deleteFile(parent, file) == false)
+            Boolean deleteSuccess = this.hdfsScanner.moveFileToTrash(parent, file);
+            if (!deleteSuccess) {
+                DialogResult delPermanently = MessageBox.showMessageBox(guiScreen, "Warning",
+                                                               "Couldn`t move this file to trash. Delete it permanently?",
+                                                               DialogButtons.YES_NO);
+                if (delPermanently == DialogResult.YES) 
+                    deleteSuccess = this.hdfsScanner.deleteFile(parent, file);
+            }
+            if (!deleteSuccess)
             {
                 throw new IOException("Couldn't delete this file");
             }
