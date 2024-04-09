@@ -22,6 +22,8 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.hadoop.fs.FileStatus;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.fs.FileSystem;
 import org.nchadoop.fs.Directory;
 import org.nchadoop.fs.HdfsScanner;
 import org.nchadoop.fs.SearchRoot;
@@ -47,12 +49,40 @@ public class Controller
     private ScanningPopup scanningPopup;
     private HdfsScanner   hdfsScanner;
 
-    public void startScan(final URI uri, String[] globFilter)
+    public void startScan(URI uri, String[] globFilter)
     {
         this.mainWindow.init();
-
         try
         {
+            Path path = new Path(uri);
+            FileSystem fileSystem = this.hdfsScanner.getFileSystem();
+
+            Boolean pathChanged = false;
+            while (!fileSystem.exists(path)) {
+                path = path.getParent();
+                if (!pathChanged) pathChanged = true;
+            }
+            if (pathChanged) {
+                String oldPath = uri.toString();
+                uri = path.toUri();
+                String newPath = uri.toString();
+
+                if(oldPath.length() > 50) oldPath = "..." + oldPath.substring(oldPath.length()-46, oldPath.length());
+                if(newPath.length() > 50) newPath = "..." + newPath.substring(newPath.length()-46, newPath.length());
+
+                String changePathMsgText = "Couldn't find directory " + oldPath + ".\nDo you want to scan " + newPath + "?";
+                
+                DialogResult changePathConfirmRes = MessageBox.showMessageBox(this.guiScreen, "Error",
+                                                                              changePathMsgText,
+                                                                              DialogButtons.YES_NO);
+
+                if (changePathConfirmRes == DialogResult.NO) {
+                    MessageBox.showMessageBox(this.guiScreen, "Error", "Directory not found. Application will be closed");
+                    shutdown();
+                    return;
+                }
+            }
+            
             final SearchRoot searchRoot = this.hdfsScanner.refresh(uri, this.scanningPopup, globFilter);
 
             this.mainWindow.updateSearchRoot(searchRoot);
